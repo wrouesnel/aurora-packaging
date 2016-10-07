@@ -1,0 +1,22 @@
+sudo: true
+services:
+- docker
+install:
+- sudo apt-get update && sudo apt-get install -y jq
+script:
+- curl -o aurora-mirror.json -L "http://www.apache.org/dyn/closer.cgi?as_json=1&path=/aurora/${TRAVIS_BRANCH}/apache-aurora-${TRAVIS_BRANCH}.tar.gz"
+- export aurora_mirror="$(cat aurora-mirror.json | jq -r .preferred)$(cat aurora-mirror.json | jq -r .path_info)"
+- curl -o apache-aurora-${TRAVIS_BRANCH}.tar.gz -L "${aurora_mirror}"
+- http_proxy= https_proxy= ./build-artifact.sh builder/deb/ubuntu-xenial/ apache-aurora-${TRAVIS_BRANCH}.tar.gz ${TRAVIS_BRANCH}
+deploy:
+  provider: releases
+  api_key:
+    secure: Q4nfw6/zgu5pBhKPodUJohO4Fr3r3FgEcqQtB/qFJZkI/VfhCfBvmN6hSuMPNi7klHmaL0tX1G+4sAQwHNRaqznp7ZQ57+Fr+oVghfUBnROeubCLjdyeBc7hrjBkdaG/GMIk2sQ9c09cFQER4WPEFnvgGR7RgAkLFp6IY6YeBCydIdLc45aHdF77vd9hV4/VZlPg3A2SSPUJ7CGDDdgd1sMV3Y9OsFDPgdhWiesirRsOAewKh5S/Qft7FybbTvlweY5qrhBrcTEZiCDSf2RsIR69XVQDf8dAczaWMDOX0sYpkV+CXsvVP0/wPWdsc3kLJGZN0gm30wps5Omnq1U3dOOailv1z3YtCwiUJ+2iFbOHj8XDk1jI0EUHs5yTZW5pxAxLwMEBo+P97Bvn3xrL2fJM1NWchpH8lZ/L65YFLa2DDYoBlOgL+BxyaeaZIilC+ggj5TCilEcGw3F1Iwi0mkJOFaX0JHCaJZAoikr10Mz6FZD82gToyEvHhavXtGXGu2xLNnNqA3rkHPJt9OB8XeLckQQtkpBmnCmR23C5AF5yBfIzwZKlCYckIaRXNSGpGYPoNTHJQ/yB+/KVrhp/IbdIsKW9kOehFtDn6tg4y/M9Y32pKHQ8nMqSEROCw3+QTFS0DdMm/g9shDF9odxbmtBd/LhX9xI9yfC2yaxR2Rg=
+  file:
+  - artifacts/aurora-ubuntu-xenial/dist/aurora-doc_${TRAVIS_BRANCH}_all.deb
+  - artifacts/aurora-ubuntu-xenial/dist/aurora-executor_${TRAVIS_BRANCH}_amd64.deb
+  - artifacts/aurora-ubuntu-xenial/dist/aurora-scheduler_${TRAVIS_BRANCH}_amd64.deb
+  - artifacts/aurora-ubuntu-xenial/dist/aurora-tools_${TRAVIS_BRANCH}_amd64.deb
+  overwrite: true
+  on:
+    repo: wrouesnel/aurora-packaging
