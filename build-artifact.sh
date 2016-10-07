@@ -30,9 +30,13 @@ run_build() {
 
   IMAGE_NAME="aurora-$(basename $BUILDER_DIR)"
   echo "Using docker image $IMAGE_NAME"
-  docker build -t "$IMAGE_NAME" "$BUILDER_DIR"
+  docker build --build-arg=http_proxy=$http_proxy \
+    --build-arg=https_proxy=$https_proxy \
+    -t "$IMAGE_NAME" "$BUILDER_DIR"
 
   docker run \
+    -e http_proxy=$http_proxy \
+    -e https_proxy=$https_proxy \
     -e AURORA_VERSION=$AURORA_VERSION \
     --net=host \
     -v "$(pwd)/specs:/specs:ro" \
