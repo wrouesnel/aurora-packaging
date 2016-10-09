@@ -4,23 +4,8 @@ services:
 install:
 - sudo apt-get update && sudo apt-get install -y jq
 script:
-# Get the version of the code we're associated with
-- curl -o aurora-mirror.json -L "http://www.apache.org/dyn/closer.cgi?as_json=1&path=/aurora/${TRAVIS_BRANCH}/apache-aurora-${TRAVIS_BRANCH}.tar.gz"
-- export aurora_mirror="$(cat aurora-mirror.json | jq -r .preferred)$(cat aurora-mirror.json | jq -r .path_info)"
-- curl -o apache-aurora-${TRAVIS_BRANCH}.tar.gz -L "${aurora_mirror}"
+- ./local-build.sh
+- ./build-repositories.sh
 # Build all artifacts
 - http_proxy= https_proxy= ./build-artifact.sh apache-aurora-${TRAVIS_BRANCH}.tar.gz ${TRAVIS_BRANCH}
-# Hash and sign them
-- ./build-support/release/release-candidate
-deploy:
-  provider: bintray
 
-  file:
-  - artifacts/aurora-ubuntu-xenial/dist/aurora-doc_${TRAVIS_BRANCH}_all.deb
-  - artifacts/aurora-ubuntu-xenial/dist/aurora-executor_${TRAVIS_BRANCH}_amd64.deb
-  - artifacts/aurora-ubuntu-xenial/dist/aurora-scheduler_${TRAVIS_BRANCH}_amd64.deb
-  - artifacts/aurora-ubuntu-xenial/dist/aurora-tools_${TRAVIS_BRANCH}_amd64.deb
-  overwrite: true
-  on:
-    repo: wrouesnel/aurora-packaging
-    tags: true

@@ -2,3 +2,5 @@ dist/
 .vagrant
 /build-support/*.venv
 /build-support/virtualenv-*
+.download/
+.ipfs-staging/

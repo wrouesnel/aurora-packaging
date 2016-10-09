@@ -1,3 +1,7 @@
+wrouesnel: This is a forked repository to create a manageable personal source
+release process. I am currently experimenting with IPFS as a low-effort
+way to scale up deployment like this.
+
 ## Packaging for Apache Aurora
 
 This repository maintains configuration and tooling for building binary
