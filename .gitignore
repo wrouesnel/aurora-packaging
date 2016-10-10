@@ -4,3 +4,4 @@ dist/
 /build-support/virtualenv-*
 .download/
 .ipfs-staging/
+.aptly

@@ -20,4 +20,5 @@ if [ ! -e "apache-aurora-${VERSION}.tar.gz" ] ; then
     curl -o $download_dir/apache-aurora-${VERSION}.tar.gz "$MIRROR"
 fi
 
-http_proxy= https_proxy= ./build-artifact.sh $download_dir/apache-aurora-${VERSION}.tar.gz ${VERSION}
+http_proxy=$http_proxy https_proxy=$https_proxy ./build-artifact.sh \
+    $download_dir/apache-aurora-${VERSION}.tar.gz ${VERSION}

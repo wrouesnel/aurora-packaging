@@ -12,12 +12,22 @@ if ! ipfs id > /dev/null ; then
     exit 1
 fi
 
-staging_dir=.ipfs-staging/aurora
+staging_dir=$(jq -r '.rootDir' aptly.conf)/public/aurora
 
-if [ ! -d .ipfs-staging ]; then
-
+if [ ! -d "$staging_dir" ]; then
+    echo "No staging directory found. Did you run ./build-repositories.sh ?"
+    exit 1
 fi
 
-root_hash=$(ipfs add -w $staging_dir | tail -n1)
+result=$(ipfs add -w -r $staging_dir | tail -n1)
+if [ $? != "0" ]; then
+    echo "ipfs upload failed."
+    exit 1
+fi
 
-echo "Aurora repositories deployed: /ipfs/$root_hash/aurora"
+echo "Aurora repositories deployed:"
+new_hash=$(echo $result | cut -d' ' -f2)
+echo "/ipfs/$new_hash/aurora"
+
+# Update ipns
+ipfs name publish $new_hash

@@ -29,6 +29,7 @@ run_build() {
   AURORA_VERSION=$3
 
   IMAGE_NAME="aurora-$(basename $BUILDER_DIR)"
+  VERSION_APPEND=$(echo $BUILDER_DIR | cut -d'-' -f2-)
   echo "Using docker image $IMAGE_NAME"
   docker build --build-arg=http_proxy=$http_proxy \
     --build-arg=https_proxy=$https_proxy \
@@ -37,7 +38,7 @@ run_build() {
   docker run \
     -e http_proxy=$http_proxy \
     -e https_proxy=$https_proxy \
-    -e AURORA_VERSION=$AURORA_VERSION \
+    -e AURORA_VERSION=$AURORA_VERSION~$VERSION_APPEND \
     --net=host \
     -v "$(pwd)/specs:/specs:ro" \
     -v "$(realpath $RELEASE_TAR):/src.tar.gz:ro" \
